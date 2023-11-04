@@ -6,33 +6,33 @@ const uidDigitLength = 4; // digit length of UID
 
 function _onFormSubmit(e) {
   const { rowStart } = e.range
-  var url = SpreadsheetApp.getActive().getFormUrl();
-  var form = FormApp.openByUrl(url);
-  var response = form.getResponses().pop();
-  var url = form.getPublishedUrl();
+  const url = SpreadsheetApp.getActive().getFormUrl();
+  const form = FormApp.openByUrl(url);
+  const response = form.getResponses().pop();
+  const url = form.getPublishedUrl();
   const editUrl = response.getEditResponseUrl()
-  var responseId = response.getId();
+  const responseId = response.getId();
 
   // for sequential id
-  var uid = createUid(responseId);
+  const uid = createUid(responseId);
   // for random id
-  //var uid = createRandomUid(responseId);
+  //const uid = createRandomUid(responseId);
   writeUidToSheet(uid, rowStart);
 
-  var email = response.getRespondentEmail();
+  const email = response.getRespondentEmail();
   if (email) {
 
-    var AnkVersion = "Ankurayan 2023"; // Ankurayan Verion
-    var AnkContactNo = "9778249509, 9999"; //Contact Numbers
-    var AnkPunchLine = "ଅଙ୍କୁରାୟନ ହସର ଫଗୁଣ - ମାଟିରେ ମଗନ"; //Anlrayan Punch Line
-    var BandhuContactNo = "9778249509, 9778249509"; //Bandhu office Contact No
-    var greet = "Greetings from Bandhu family!!!";
-    var title = "Thanks for your registration in ";
-    var contmob = "For any enquiry and feedback, you can contact on :  "
+    const AnkVersion = "Ankurayan 2023"; // Ankurayan Verion
+    const AnkContactNo = "9778249509, 9999"; //Contact Numbers
+    const AnkPunchLine = "ଅଙ୍କୁରାୟନ ହସର ଫଗୁଣ - ମାଟିରେ ମଗନ"; //Anlrayan Punch Line
+    const BandhuContactNo = "9778249509, 9778249509"; //Bandhu office Contact No
+    const greet = "Greetings from Bandhu family!!!";
+    const title = "Thanks for your registration in ";
+    const contmob = "For any enquiry and feedback, you can contact on :  "
 
-    var subject = "Bandhu : Registration Number ";
+    const subject = "Bandhu : Registration Number ";
 
-    var htmlBody = "<p><table style='width: 600px; margin: 10px auto; background: #dfe4ea;'><tr>" +
+    const htmlBody = "<p><table style='width: 600px; margin: 10px auto; background: #dfe4ea;'><tr>" +
       "<td style='padding: 0px 20px;'> <font face='verdana'>" + greet + "<br>" + title + AnkVersion +
       "<p>Please refer your Unique Registration No</p>" +
       "<div style='padding: 20px;border-radius: 20px; background: linear-gradient(60deg, #609fd6, #1aafbc);'>" +
@@ -43,7 +43,7 @@ function _onFormSubmit(e) {
 
       "<p>Thanks,<br>" + AnkPunchLine + "<BR>​Ankurayan Committee<br>Bandhu, The Friend<br>https://bandhuodisha.in/<br>email: bandhuankurayan@gmail.com<br>Contact:" + BandhuContactNo + "</p>" +
       "</td></tr></table>";
-    var options = {
+    const options = {
       htmlBody: htmlBody,
       name: "Bandhu Ankurayan"
     };
@@ -60,14 +60,14 @@ function _onFormSubmit(e) {
 }
 // Write uid to the responses sheet
 function writeUidToSheet(uid, rowStart) {
-  var ws = SpreadsheetApp.getActive().getSheetByName(sheetName);
-  var dataRange = ws.getDataRange();
-  var values = dataRange.getValues();
-  var headers = values[0];
-  var indexUid;
+  const ws = SpreadsheetApp.getActive().getSheetByName(sheetName);
+  const dataRange = ws.getDataRange();
+  const values = dataRange.getValues();
+  const headers = values[0];
+  const indexUid;
 
   // Locate the index of header UID
-  for (var c = 0; c < headers.length; c++) {
+  for (const c = 0; c < headers.length; c++) {
     if (headers[c] === uidHeader) {
       indexUid = c;
       break;
@@ -84,9 +84,9 @@ function writeUidToSheet(uid, rowStart) {
   }
 
   // Check UID's in the sheet row by row
-  var isNewUid = true;
-  for (var r = 1; r < values.length; r++) {
-    var currentUid = values[r][indexUid];
+  const isNewUid = true;
+  for (const r = 1; r < values.length; r++) {
+    const currentUid = values[r][indexUid];
     if (currentUid === uid) {
       isNewUid = false;
       break;
@@ -100,14 +100,14 @@ function writeUidToSheet(uid, rowStart) {
 
 // Write Log to the responses sheet
 function writeLogToSheet(slog, rowStart) {
-  var ws = SpreadsheetApp.getActive().getSheetByName(sheetName);
-  var dataRange = ws.getDataRange();
-  var values = dataRange.getValues();
-  var headers = values[0];
-  var indexslog;
+  const ws = SpreadsheetApp.getActive().getSheetByName(sheetName);
+  const dataRange = ws.getDataRange();
+  const values = dataRange.getValues();
+  const headers = values[0];
+  const indexslog;
 
   // Locate the index of header LOG
-  for (var c = 0; c < headers.length; c++) {
+  for (const c = 0; c < headers.length; c++) {
     if (headers[c] === sLogHeader) {
       indexslog = c;
       break;
@@ -124,9 +124,9 @@ function writeLogToSheet(slog, rowStart) {
   }
 
   // Check LOG in the sheet row by row
-  var isNewslog = true;
-  for (var r = 1; r < values.length; r++) {
-    var currentslog = values[r][indexslog];
+  const isNewslog = true;
+  for (const r = 1; r < values.length; r++) {
+    const currentslog = values[r][indexslog];
     if (currentslog === slog) {
       isNewslog = false;
       break;
@@ -141,17 +141,17 @@ function writeLogToSheet(slog, rowStart) {
 
 // Create a UID in document properties
 function createUid(responseId) {
-  var docProperties = PropertiesService.getDocumentProperties();
-  var key = "uid";
-  var id = 1;
+  const docProperties = PropertiesService.getDocumentProperties();
+  const key = "uid";
+  const id = 1;
   if (docProperties.getProperty(responseId)) {
-    var uid = docProperties.getProperty(responseId);
+    const uid = docProperties.getProperty(responseId);
   } else {
     if (docProperties.getProperty(key)) {
       id = parseInt(docProperties.getProperty(key));
     }
 
-    var uid = (Math.pow(10, uidDigitLength) + id).toString().substring(1, uidDigitLength + 1);
+    const uid = (Math.pow(10, uidDigitLength) + id).toString().substring(1, uidDigitLength + 1);
     uid = uidPrefix + uid;
 
     docProperties.setProperty(key, id + 1);
@@ -162,19 +162,19 @@ function createUid(responseId) {
 
 // function a random uid in document properties
 function createRandomUid(responseId) {
-  var docProperties = PropertiesService.getDocumentProperties();
-  var key = "randomUids";
-  var ids = [];
+  const docProperties = PropertiesService.getDocumentProperties();
+  const key = "randomUids";
+  const ids = [];
   if (docProperties.getProperty(responseId)) {
-    var uid = docProperties.getProperty(responseId);
+    const uid = docProperties.getProperty(responseId);
   } else {
     if (docProperties.getProperty(key)) {
       ids = JSON.parse(docProperties.getProperty(key));
     }
 
     do {
-      var randomNumber = Math.pow(10, uidDigitLength) + Math.floor(Math.random() * Math.pow(10, uidDigitLength));
-      var uid = randomNumber.toString().substring(1, uidDigitLength + 1);
+      const randomNumber = Math.pow(10, uidDigitLength) + Math.floor(Math.random() * Math.pow(10, uidDigitLength));
+      const uid = randomNumber.toString().substring(1, uidDigitLength + 1);
       uid = uidPrefix + uid;
     } while (ids.indexOf(uid) !== -1)
 
