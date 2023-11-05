@@ -42,13 +42,11 @@ let valueOf; // function which returns the value of given key. undefined, if the
 let uid;
 
 function _onFormSubmit(e) {
-  console.log("Got Arguments: ", JSON.stringify(e));
   const responses = e.namedValues;
-  valueOf = key => responses[key].join().trim();
+  valueOf = key => responses[key]?.filter(a => !!a?.trim()).join();
 
-  const { rowStart } = e.range
+  const { rowStart, rowEnd, columnStart, columnEnd } = e.range
   const url = SpreadsheetApp.getActive().getFormUrl();
-  console.log({url});
   // exception from below hence using triggerUid - which is the same id from the given user
   // const form = FormApp.openByUrl(url);
   // const response = form.getResponses().pop();
@@ -61,29 +59,27 @@ function _onFormSubmit(e) {
   writeUidToSheet(uid, rowStart);
 
   const email = valueOf(emailAddress);
-  if (email) {
+  if (email.length) {
     let status = 'not sent';
+    const emailBody = createEmailBody();
     try {
-
-      MailApp.sendEmail({
+      const emailParameters = {
         to: email,
         subject: EMAIL_SUBJECT,
-        htmlBody: createEmailBody(),
-      });
+        htmlBody: emailBody,
+      };
+      console.log({emailParameters: JSON.stringify(emailParameters)});
+      MailApp.sendEmail(emailParameters);
 
       status = 'Sent';
     } catch (e) {
+      console.log({Exception : JSON.stringify(e)});
       writeLogToSheet(e.message, rowStart);
     }
 
     // Append the status on the spreadsheet to the responses' row.
-    let sheet = SpreadsheetApp.getActiveSheet();
-    let row = sheet.getActiveRange().getRow();
-    let column = e.values.length + 1;
-    sheet.getRange(row, column).setValue(status);
-
-    console.log("status=" + status + "; responses=" + JSON.stringify(responses));
-
+    const sheet = SpreadsheetApp.getActiveSheet();
+    sheet.getRange(rowEnd, columnEnd).setValue(status);
   }
 }
 
@@ -91,27 +87,42 @@ function _onFormSubmit(e) {
  * Creates email body and includes the links based on topic.
  *
  * @param {string} recipient - The recipient's email address.
- * @param {string[]} topics - List of topics to include in the email body.
  * @return {string} - The email body as an HTML string.
  */
 function createEmailBody() {
   const name = valueOf(participantNameପ୍ରତିଯୋଗୀଙ୍କନାମ);
-
-  let topicsHtml = topics.map(function(topic) {
-  let url = topicUrls[topic];
-    return '<li><a href="' + url + '">' + topic + '</a></li>';
-  }).join('');
-  topicsHtml = '<ul>' + topicsHtml + '</ul>';
-
   // Make sure to update the emailTemplateDocId at the top.
-  let docId = DocumentApp.openByUrl(EMAIL_TEMPLATE_DOC_URL).getId();
+  const docId = DocumentApp.openByUrl(EMAIL_TEMPLATE_DOC_URL).getId();
+  console.log({docId})
   let emailBody = docToHtml(docId);
   emailBody = emailBody.replace(/{{NAME}}/g, name);
   emailBody = emailBody.replace(/{{TOPICS}}/g, topicsSelected());
   emailBody = emailBody.replace(/{{REGISTRATION_MESSAGE_HTML}}/g, registrationMessageHtml);
 
+  console.log('Returned from createEmailBody function.');
   return emailBody;
 }
+
+
+/**
+ * Downloads a Google Doc as an HTML string.
+ *
+ * @param {string} docId - The ID of a Google Doc to fetch content from.
+ * @return {string} The Google Doc rendered as an HTML string.
+ */
+function docToHtml(docId) {
+
+  // Downloads a Google Doc as an HTML string.
+  let url = "https://docs.google.com/feeds/download/documents/export/Export?id=" +
+            docId + "&exportFormat=html";
+  let param = {
+    method: "get",
+    headers: {"Authorization": "Bearer " + ScriptApp.getOAuthToken()},
+    muteHttpExceptions: true,
+  };
+  return UrlFetchApp.fetch(url, param).getContentText();
+}
+
 
 const topicsSelected = () => {
     const keys = [
@@ -132,12 +143,14 @@ const topicsSelected = () => {
     ];
 
     let selections = "<h3>You have selected:</h3>";
+    console.log('Entering topicsSelected');
 
     keys.forEach( key => {
       const value = valueOf(key);
       if(value) selections += `<h4>${key}</h4> <p>${value}</p><br/>`;
     });
     selections += `<h4>Activities</h4> <p>${valueOf(selectOneOrMoreActivities)}</p><br/>`;
+    console.log('Exiting topicsSelected', selections);
 
     return selections;
 }
