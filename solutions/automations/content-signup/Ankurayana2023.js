@@ -68,7 +68,6 @@ function _onFormSubmit(e) {
         subject: EMAIL_SUBJECT,
         htmlBody: emailBody,
       };
-      console.log({emailParameters: JSON.stringify(emailParameters)});
       MailApp.sendEmail(emailParameters);
 
       status = 'Sent';
@@ -82,6 +81,19 @@ function _onFormSubmit(e) {
     sheet.getRange(rowEnd, columnEnd).setValue(status);
   }
 }
+
+
+const registrationMessageHtml =  "<p><table style='width: 600px; margin: 10px auto; background: #dfe4ea;'><tr>" +
+"<td style='padding: 0px 20px;'> <font face='verdana'>" + greet + "<br>" + title + AnkVersion +
+"<p>Please refer your Unique Registration No</p>" +
+"<div style='padding: 20px;border-radius: 20px; background: linear-gradient(60deg, #609fd6, #1aafbc);'>" +
+
+"<div style='font-size: 20px; color: #E06666; text-align: center;'><b>" + uid + "</b></div>" +
+
+"</div>" + "<br>" + contmob + AnkContactNo +
+
+"<p>Thanks,<br>" + AnkPunchLine + "<BR>​Ankurayan Committee<br>Bandhu, The Friend<br>https://bandhuodisha.in/<br>email: bandhuankurayan@gmail.com<br>Contact:" + BandhuContactNo + "</p>" +
+"</td></tr></table>";
 
 /**
  * Creates email body and includes the links based on topic.
@@ -99,7 +111,6 @@ function createEmailBody() {
   emailBody = emailBody.replace(/{{TOPICS}}/g, topicsSelected());
   emailBody = emailBody.replace(/{{REGISTRATION_MESSAGE_HTML}}/g, registrationMessageHtml);
 
-  console.log('Returned from createEmailBody function.');
   return emailBody;
 }
 
@@ -143,29 +154,15 @@ const topicsSelected = () => {
     ];
 
     let selections = "<h3>You have selected:</h3>";
-    console.log('Entering topicsSelected');
 
     keys.forEach( key => {
       const value = valueOf(key);
-      if(value) selections += `<h4>${key}</h4> <p>${value}</p><br/>`;
+      if(value) selections += `<h4>${key}</h4> <p>${value}</p>`;
     });
     selections += `<h4>Activities</h4> <p>${valueOf(selectOneOrMoreActivities)}</p><br/>`;
-    console.log('Exiting topicsSelected', selections);
 
     return selections;
 }
-
-const registrationMessageHtml =  "<p><table style='width: 600px; margin: 10px auto; background: #dfe4ea;'><tr>" +
-"<td style='padding: 0px 20px;'> <font face='verdana'>" + greet + "<br>" + title + AnkVersion +
-"<p>Please refer your Unique Registration No</p>" +
-"<div style='padding: 20px;border-radius: 20px; background: linear-gradient(60deg, #609fd6, #1aafbc);'>" +
-
-"<div style='font-size: 20px; color: #E06666; text-align: center;'><b>" + uid + "</b></div>" +
-
-"</div>" + "<br>" + contmob + AnkContactNo +
-
-"<p>Thanks,<br>" + AnkPunchLine + "<BR>​Ankurayan Committee<br>Bandhu, The Friend<br>https://bandhuodisha.in/<br>email: bandhuankurayan@gmail.com<br>Contact:" + BandhuContactNo + "</p>" +
-"</td></tr></table>";
 
 // Write uid to the responses sheet
 function writeUidToSheet(uid, rowStart) {
