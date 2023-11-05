@@ -50,7 +50,7 @@ function _onFormSubmit(e) {
   // exception from below hence using triggerUid - which is the same id from the given user
   // const form = FormApp.openByUrl(url);
   // const response = form.getResponses().pop();
-  const responseId = e.triggerUid ;
+  const responseId = e.triggerUid ; // TODO. replace this
 
   // for sequential id
   uid = createUid(responseId);
