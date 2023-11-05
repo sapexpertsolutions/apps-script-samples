@@ -70,7 +70,7 @@ function _onFormSubmit(e) {
       };
       MailApp.sendEmail(emailParameters);
 
-      status = 'Sent';
+      status = 'Email Sent';
     } catch (e) {
       console.log({Exception : JSON.stringify(e)});
       writeLogToSheet(e.message, rowStart);
@@ -83,7 +83,7 @@ function _onFormSubmit(e) {
 }
 
 
-const registrationMessageHtml =  "<p><table style='width: 600px; margin: 10px auto; background: #dfe4ea;'><tr>" +
+const registrationMessageHtml = () =>  "<p><table style='width: 600px; margin: 10px auto; background: #dfe4ea;'><tr>" +
 "<td style='padding: 0px 20px;'> <font face='verdana'>" + greet + "<br>" + title + AnkVersion +
 "<p>Please refer your Unique Registration No</p>" +
 "<div style='padding: 20px;border-radius: 20px; background: linear-gradient(60deg, #609fd6, #1aafbc);'>" +
@@ -108,8 +108,10 @@ function createEmailBody() {
   console.log({docId})
   let emailBody = docToHtml(docId);
   emailBody = emailBody.replace(/{{NAME}}/g, name);
+  emailBody = emailBody.replace(/{{AnkVersion}}/g, AnkVersion);
+  emailBody = emailBody.replace(/{{AnkPunchLine}}/g, AnkPunchLine);
   emailBody = emailBody.replace(/{{TOPICS}}/g, topicsSelected());
-  emailBody = emailBody.replace(/{{REGISTRATION_MESSAGE_HTML}}/g, registrationMessageHtml);
+  emailBody = emailBody.replace(/{{REGISTRATION_MESSAGE_HTML}}/g, registrationMessageHtml());
 
   return emailBody;
 }
@@ -153,11 +155,11 @@ const topicsSelected = () => {
       schoolNameବିଦ୍ୟାଳୟରନାମSarankul,
     ];
 
-    let selections = "<h3>You have selected:</h3>";
+    let selections = "";
 
     keys.forEach( key => {
       const value = valueOf(key);
-      if(value) selections += `<h4>${key}</h4> <p>${value}</p>`;
+      if(value) selections += `<p><h4 style="display:inline-block">${key}</h4> ${value}</p>`;
     });
     selections += `<h4>Activities</h4> <p>${valueOf(selectOneOrMoreActivities)}</p><br/>`;
 
